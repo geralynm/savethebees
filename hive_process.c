@@ -144,7 +144,6 @@ struct hivedata{
 		hive->temperature_flag = OK_FLAG;
 	}
 	fprintf(fp, "%d ", hive->temperature_flag);
-	fclose(fp);
  }
 
 //handles the FFT process for the entire WAVE file.   
@@ -191,7 +190,7 @@ int audio_compare(float *fft_array, int numsamples, struct wave_header *hdr, str
 	
 	//define thresholds for bee age distribution as percentages of total population
 	//4daybee_low, 4daybee_high, 6daybee_low, 6daybee_high, 9daybee_low, 9daybee_high
-	float bee_age_dist[] = {34.6, 47.5, 17.9, 28.1, 13.3, 20.7};
+	float bee_age_dist[] = {17.9, 28.1, 34.6, 47.5, 33.2, 41.6};
 
 	//frequency bin size is 4Hz
 	int freq_bin_size = hdr->SampleRate/numsamples;
@@ -225,10 +224,10 @@ int audio_compare(float *fft_array, int numsamples, struct wave_header *hdr, str
 	else if(amp_6day_bee_percentage > bee_age_dist[3]) {
 		hive->bee_flags[1] = HIGH_FLAG;
 	}
-	if (amp_4day_bee_percentage < bee_age_dist[4]) {
+	if (amp_9day_bee_percentage < bee_age_dist[4]) {
 		hive->bee_flags[2] = LOW_FLAG;
 	}
-	else if(amp_4day_bee_percentage > bee_age_dist[5]) {
+	else if(amp_9day_bee_percentage > bee_age_dist[5]) {
 		hive->bee_flags[2] = HIGH_FLAG;
 	}
 	
@@ -259,7 +258,6 @@ int audio_compare(float *fft_array, int numsamples, struct wave_header *hdr, str
    
    float fft_array[11024];
    FFT_handle(fp, hdr, fft_array);
-
    
    FILE* hivefp;
    hivefp = fopen("hivedata.txt", "a+");
@@ -270,6 +268,6 @@ int audio_compare(float *fft_array, int numsamples, struct wave_header *hdr, str
 		fprintf(hivefp, "%d ", hive.bee_flags[i]);
 	}
 	fprintf(hivefp, "\n");
-	printf("%d %d %d %d\n", hive.humidity_flag, hive.temperature_flag, hive.bee_flags[0], hive.bee_flags[1]);
-	
+
+	fclose(hivefp);
  }
